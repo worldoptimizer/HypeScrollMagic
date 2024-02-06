@@ -4,6 +4,28 @@
 
 `HypeScrollMagic` is a JavaScript extension designed for integration with [Tumult Hype](https://tumult.com/hype/), enabling developers and designers to create interactive, scroll-based animations and interactions within their Hype projects. Leveraging the power of ScrollMagic, this extension makes it easy to trigger animations as users scroll through a webpage, enhancing the storytelling and user engagement of Hype animations.
 
+## Documentation
+
+The documentation for `HypeScrollMagic`, detailing its functions and usage within Tumult Hype projects, is maintained using [JSDoc](https://en.wikipedia.org/wiki/JSDoc) and can be accessed online:
+
+- Documentation URL: [https://doxdox.org/worldoptimizer/HypeScrollMagic](https://doxdox.org/worldoptimizer/HypeScrollMagic)
+
+### Content Delivery Network (CDN)
+
+To seamlessly integrate the latest version of `HypeScrollMagic` into your Hype project, include the following script tag in the head section of your HTML:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeScrollMagic/HypeScrollMagic.min.js"></script>
+```
+
+For additional security and version control, you may opt to use a version with Subresource Integrity (SRI) or specify a particular release. Detailed instructions and options are available on the JsDelivr CDN page for `HypeScrollMagic`:
+
+- CDN Details: [https://www.jsdelivr.com/package/gh/worldoptimizer/HypeScrollMagic](https://www.jsdelivr.com/package/gh/worldoptimizer/HypeScrollMagic)
+
+Learn more about incorporating the latest extension versions into your Hype projects and how to consolidate multiple extensions into a single file:
+
+- Extension Usage Guide: [https://github.com/worldoptimizer/HypeCookBook/wiki/Including-external-files-and-Hype-extensions](https://github.com/worldoptimizer/HypeCookBook/wiki/Including-external-files-and-Hype-extensions)
+
 ## Features
 
 - **Scroll-Driven Animations**: Trigger Hype timelines based on the scroll position, allowing for immersive storytelling and interactive experiences.
