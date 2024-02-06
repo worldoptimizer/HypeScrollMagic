@@ -8,6 +8,7 @@
  * Version-History
  * 1.0.0 Initial release
  * 1.0.1 Added method to add scroll timelines programmatically
+ * 1.0.2 Refactored names
  */
 
 if ("HypeScrollMagic" in window === false) {
@@ -115,7 +116,7 @@ if ("HypeScrollMagic" in window === false) {
         window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
         return {
-            version: '1.0.1',
+            version: '1.0.2',
         };
     })();
 }
