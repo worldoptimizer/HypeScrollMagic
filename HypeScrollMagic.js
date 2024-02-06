@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic
+ * Hype ScrollMagic v1.0.2
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
