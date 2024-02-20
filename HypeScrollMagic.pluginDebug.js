@@ -1,13 +1,8 @@
 /*!
- * Hype ScrollMagic Plugin Debug v1.0.0
- * 
- * Forked from official Scroll Magic Repository
- * @version 2.0.8
- * @license Dual licensed under MIT license and GPL.
- * @author Jan Paepke - e-mail@janpaepke.de
- * @author Max Ziebell
- * @file Debug Extension for ScrollMagic.
- */
+ Hype ScrollMagic Plugin Debug v1.0.0
+ Forked from official Scroll Magic Repository (version 2.0.8) by Jan Paepke - e-mail@janpaepke.de,
+ copyright (c) 2024 , Max Ziebell (https://maxziebell.de). MIT license and GPL
+*/
 
 /*
  * Version-History
