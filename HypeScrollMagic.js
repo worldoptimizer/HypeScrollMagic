@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic v1.0.3
+ * Hype ScrollMagic v1.0.4
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
@@ -10,9 +10,18 @@
  * 1.0.1 Added method to add scroll timelines programmatically
  * 1.0.2 Refactored names
  * 1.0.3 Added behavior triggers, default options and better markers
+ * 1.0.4 Added horizontal support data-scroll-horizontal, better marker support
  */
 
  if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
+    if (!window.ScrollMagic) {
+        console.error("ScrollMagic is not available.");
+        return;
+    } else {
+        ScrollMagic.Scene.prototype.addIndicators = null;
+        ScrollMagic.Scene.prototype.removeIndicators = null;
+    }
+    
     const controllers = {};
     const scenes = [];
 
@@ -27,9 +36,10 @@
             enter: true,
             leave: true,
         },
-        markerColor: '#333',
+        markerColor: 'grey',
         timelineName: 'Main Timeline',
         logBehavior: false,
+        addIndicators: true,
     };
 
     /**
@@ -103,9 +113,15 @@
      * @returns {object} - the scroll timeline
      */
     function addScrollTimeline(hypeDocument, element, timelineName, options) {
+        
+        const axis = options.horizontal? '_h' : '_v';
         const sceneId = hypeDocument.currentSceneId();
-        if (!controllers[sceneId]) {
-            controllers[sceneId] = new ScrollMagic.Controller();
+        const controllerId = sceneId + axis;
+        
+        if (!controllers[controllerId]) {
+            controllers[controllerId] = new ScrollMagic.Controller({
+             vertical: options.horizontal? false : true,
+            });
         }
 
         timelineName = timelineName || _default.timelineName;
@@ -117,7 +133,7 @@
 
         const offset = options.offset !== undefined ? options.offset : cumulativeTop;
         const duration = options.duration !== undefined ? options.duration : elementHeight;
-        const triggerHookValue = options.triggerHook;// !== undefined ? options.triggerHook : 0.5;
+        const triggerHookValue = options.triggerHook !== undefined ? options.triggerHook : 0.5;
         const symbolInstance = getSymbolInstance(hypeDocument, element);
         const api = symbolInstance ? symbolInstance : hypeDocument;
 
@@ -125,11 +141,13 @@
             triggerElement: sceneElement,
             offset: offset,
             duration: duration,
-            triggerHook: triggerHookValue
+            triggerHook: triggerHookValue,
         });
 
         if (options.pin) {
-            scene.setPin(element);
+            scene.setPin(element, {
+                pushFollowers: false,
+            });
         }
 
         if (options.reset) scene.on("add", function (event) {
@@ -138,7 +156,10 @@
         });
         
         scene.on("progress", function (event) {
-            api.goToTimeInTimelineNamed(event.progress * api.durationForTimelineNamed(timelineName), timelineName);
+            // y-position of the element, relative to the document
+            const duration = api.durationForTimelineNamed(timelineName);
+            if (duration === 0) return;
+            api.goToTimeInTimelineNamed(event.progress * duration, timelineName);
         })
         
         function triggerBehavior(eventType, event) {
@@ -159,23 +180,23 @@
                 triggerBehavior('Leave', event);
             });
         }
-
-        scene.addTo(controllers[sceneId]);
         
-        // RulerHelper integration
-        if (HypeRulerHelper) {
-            scene.onResize = function() {
-                const markerColor = element.getAttribute('data-marker-color') || _default.markerColor;
-                hypeDocument.addSceneMarker(offset, `Start: ${timelineName}`, markerColor);
-                let start = scene.triggerPosition();
-                if (scene.duration() > 0) {
-                    hypeDocument.addSceneMarker(offset + scene.duration(), `End: ${timelineName}`, markerColor);
-                }
-            };
-            scene.onResize();
+		scene.addTo(controllers[controllerId]);
+        
+        // check if scene has addIndicators method
+        // also check if _default has addIndicators set to true OR if options has addIndicators set to true
+        if (scene.addIndicator && (_default.addIndicators || options.addIndicators)) {
+            scene.addIndicators({
+                name: timelineName,
+
+                colorStart: options.markerColor,
+                colorEnd: options.markerColor,
+                colorTrigger: options.markerColor,
+            });
         }
 
         scenes.push(scene);
+
         return scene;
     }
 
@@ -202,7 +223,9 @@
                 offset: element.getAttribute('data-scroll-offset') ? parseInt(element.getAttribute('data-scroll-offset'), 10) : undefined,
                 duration: element.getAttribute('data-scroll-duration') ? parseInt(element.getAttribute('data-scroll-duration'), 10) : undefined,
                 triggerHook: element.getAttribute('data-scroll-trigger') ? parseFloat(element.getAttribute('data-scroll-trigger')) : undefined,
-                reset: element.getAttribute('data-scroll-reset') === 'false' ? false : true
+                reset: element.getAttribute('data-scroll-reset') === 'false' ? false : true,
+                horizontal: element.hasAttribute('data-scroll-horizontal'),
+                markerColor: element.getAttribute('data-marker-color') || _default.markerColor,
             };
 
             timelineNames.forEach(timelineName => {
@@ -218,9 +241,14 @@
             scene.destroy(true);
         });
         scenes.length = 0;
-        if (controllers[sceneId]) {
-            controllers[sceneId].destroy(true);
-            delete controllers[sceneId];
+        // remove controllers vertical and horizontal
+        if (controllers[sceneId+'_v']) {
+            controllers[sceneId+'_v'].destroy(true);
+            delete controllers[sceneId+'_v'];
+        }
+        if (controllers[sceneId+'_h']) {
+            controllers[sceneId+'_h'].destroy(true);
+            delete controllers[sceneId+'_h'];
         }
     }
 
@@ -232,7 +260,7 @@
     window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
     return {
-        version: '1.0.3',
+        version: '1.0.4',
         setDefault: setDefault,
         getDefault: getDefault,
     };
