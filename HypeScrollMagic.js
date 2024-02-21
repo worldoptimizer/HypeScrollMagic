@@ -11,7 +11,7 @@
  * 1.0.2 Refactored names
  * 1.0.3 Added behavior triggers, default options and better markers
  * 1.0.4 Added horizontal support data-scroll-horizontal, better marker support
- * 1.0.5 Fixed issue with options, refacored data-marker-* to data-indicator-*
+ * 1.0.5 Fixed issue with options, refactored data-marker-* to data-indicator-*
  */
 
  if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -181,7 +181,7 @@
             });
         }
         
-		scene.addTo(controllers[controllerId]);
+	scene.addTo(controllers[controllerId]);
 
         if (scene.addIndicators && (_default.addIndicators || options.addIndicators)) {
             scene.addIndicators({
