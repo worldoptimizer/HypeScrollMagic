@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic v1.0.4
+ * Hype ScrollMagic v1.0.5
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
@@ -11,6 +11,7 @@
  * 1.0.2 Refactored names
  * 1.0.3 Added behavior triggers, default options and better markers
  * 1.0.4 Added horizontal support data-scroll-horizontal, better marker support
+ * 1.0.5 Fixed issue with options, refacored data-marker-* to data-indicator-*
  */
 
  if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -31,12 +32,12 @@
             triggerHook: 0.5,
             pin: false,
             reset: true,
+            indicatorColor: 'grey',
         },
         behavior: {
             enter: true,
             leave: true,
         },
-        markerColor: 'grey',
         timelineName: 'Main Timeline',
         logBehavior: false,
         addIndicators: true,
@@ -156,7 +157,6 @@
         });
         
         scene.on("progress", function (event) {
-            // y-position of the element, relative to the document
             const duration = api.durationForTimelineNamed(timelineName);
             if (duration === 0) return;
             api.goToTimeInTimelineNamed(event.progress * duration, timelineName);
@@ -182,16 +182,13 @@
         }
         
 		scene.addTo(controllers[controllerId]);
-        
-        // check if scene has addIndicators method
-        // also check if _default has addIndicators set to true OR if options has addIndicators set to true
-        if (scene.addIndicator && (_default.addIndicators || options.addIndicators)) {
+
+        if (scene.addIndicators && (_default.addIndicators || options.addIndicators)) {
             scene.addIndicators({
                 name: timelineName,
-
-                colorStart: options.markerColor,
-                colorEnd: options.markerColor,
-                colorTrigger: options.markerColor,
+                colorStart: options.indicatorColor,
+                colorEnd: options.indicatorColor,
+                colorTrigger: options.indicatorColor,
             });
         }
 
@@ -225,9 +222,10 @@
                 triggerHook: element.getAttribute('data-scroll-trigger') ? parseFloat(element.getAttribute('data-scroll-trigger')) : undefined,
                 reset: element.getAttribute('data-scroll-reset') === 'false' ? false : true,
                 horizontal: element.hasAttribute('data-scroll-horizontal'),
-                markerColor: element.getAttribute('data-marker-color') || _default.markerColor,
+                indicatorColor: element.getAttribute('data-indicator-color') || _default.indicatorColor,
             };
-
+            if (element.hasAttribute('data-indicator-force')) options.addIndicators = true;
+    
             timelineNames.forEach(timelineName => {
                 addScrollTimeline(hypeDocument, element, timelineName, options);
             });
@@ -241,7 +239,6 @@
             scene.destroy(true);
         });
         scenes.length = 0;
-        // remove controllers vertical and horizontal
         if (controllers[sceneId+'_v']) {
             controllers[sceneId+'_v'].destroy(true);
             delete controllers[sceneId+'_v'];
@@ -260,7 +257,7 @@
     window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
     return {
-        version: '1.0.4',
+        version: '1.0.5',
         setDefault: setDefault,
         getDefault: getDefault,
     };
