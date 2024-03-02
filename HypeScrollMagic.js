@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic v1.0.6
+ * Hype ScrollMagic v1.0.7
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
@@ -13,6 +13,7 @@
  * 1.0.4 Added horizontal support data-scroll-horizontal, better marker support
  * 1.0.5 Fixed issue with options, refactored data-marker-* to data-indicator-*
  * 1.0.6 Removed HypeRulerHelper as the debugging plugin now operates independently
+ * 1.0.7 Fixed issue with horizontal and vertical controllers
  */
 
  if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -130,11 +131,12 @@
         options = Object.assign({}, _default.options, options);
 
         const sceneElement = document.getElementById(sceneId);
-        const elementHeight = hypeDocument.getElementProperty(element, 'height');
-        const cumulativeTop = element.getBoundingClientRect().top - sceneElement.getBoundingClientRect().top;
 
-        const offset = options.offset !== undefined ? options.offset : cumulativeTop;
-        const duration = options.duration !== undefined ? options.duration : elementHeight;
+        const elementDimension = element.getBoundingClientRect()[options.horizontal? 'width' : 'height'];
+        const cumulativeOffset = options.horizontal? element.getBoundingClientRect().left - sceneElement.getBoundingClientRect().left : element.getBoundingClientRect().top - sceneElement.getBoundingClientRect().top;
+
+        const offset = options.offset !== undefined ? options.offset : cumulativeOffset;
+        const duration = options.duration !== undefined ? options.duration : elementDimension;
         const triggerHookValue = options.triggerHook !== undefined ? options.triggerHook : 0.5;
         const symbolInstance = getSymbolInstance(hypeDocument, element);
         const api = symbolInstance ? symbolInstance : hypeDocument;
@@ -251,7 +253,7 @@
     window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
     return {
-        version: '1.0.6',
+        version: '1.0.7',
         setDefault: setDefault,
         getDefault: getDefault,
     };
