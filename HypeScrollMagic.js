@@ -201,13 +201,6 @@
         hypeDocument.addScrollTimeline = function (element, timelineName, options) {
             return addScrollTimeline(hypeDocument, element, timelineName, options);
         };
-        if (HypeRulerHelper) {
-            window.addEventListener('resize', debounceByRequestFrame(function() {
-                scenes.forEach(function(scene) {
-                    if (scene.onResize) scene.onResize();    
-                });
-            }));
-        }
     }
 
     function HypeSceneLoad(hypeDocument, sceneElement) {
