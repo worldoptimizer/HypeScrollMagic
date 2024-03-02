@@ -15,18 +15,24 @@ Incorporating `HypeScrollMagic` into your Tumult Hype projects unlocks a new rea
 - **Pin Elements**: Supports pinning elements during scroll, holding them fixed during a portion of the scroll sequence.
 - **Integration with RulerHelper**: If using `HypeRulerHelper`, markers can be automatically added to visualize start and end points of scroll-driven animations.
 
-## Installation
+## Quick Installation (via CDN)
+For a quick start, it's possible to incorporate ScrollMagic and HypeScrollMagic directly into your project by adding the following scripts to the Head section of your HTML. This method bypasses the need to download dependencies manually:
 
-1. **Download the Script**
-   - Clone this repository or download the `HypeScrollMagic.js` file directly.
+<small>CDN Version</small>
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/ScrollMagic.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeScrollMagic/HypeScrollMagic.min.js"></script>
+```
 
-2. **Include the Script in Your Hype Project**
-   - Open your Tumult Hype project.
-   - Navigate to the 'Resources' panel.
-   - Click the '+' button and select 'Add File...' to include `HypeScrollMagic.js`.
+To aid in debugging your scroll animations, you can utilize an optional debugging plugin alongside a visual ruler. These tools are immensely helpful during development for visual convenience and troubleshooting. However, it's advisable to remove them before deploying your project to a production environment to optimize performance and ensure a clean user experience.
 
-3. **Initialization**
-   - The script initializes automatically upon document load. No further action is required.
+<small>CDN Version (Including Debugging Tools)</small>
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/ScrollMagic.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeScrollMagic/HypeScrollMagic.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeRulerHelper/HypeRulerHelper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeScrollMagic/HypeScrollMagic.pluginDebug.min.js"></script>
+```
 
 ## Usage
 
