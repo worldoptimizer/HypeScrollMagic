@@ -41,7 +41,7 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 
 ### Main Data-Attributes
 
-- **`data-scroll-timeline`**: Links an HTML element to a specific Hype timeline or timelines. Specify one or multiple timeline names separated by commas to trigger upon scrolling.
+- **`data-scroll-timeline`**: Links an HTML element to a specific Hype timeline or timelines. Specify one or multiple timeline names separated by commas to trigger upon scrolling. While `data-scroll-offset` and `data-scroll-duration` are essential attributes for defining the start point and length of the scroll animation respectively, if they are not explicitly declared, `HypeScrollMagic` will assume these values based on the element's bounding box dimensions. This ensures that animations are still triggered effectively based on the element's position and size within the webpage, even in the absence of specific `data-scroll-offset` and `data-scroll-duration` values.
 
 ### Optional Data-Attributes
 
