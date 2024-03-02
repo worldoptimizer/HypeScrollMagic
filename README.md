@@ -51,9 +51,7 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 - **`data-scroll-trigger`**: Specifies the viewport position at which the animation should start, as a fraction of the viewport height.
 - **`data-scroll-reset`**: If set to `false`, prevents the animation from resetting to its start state when scrolled back above the trigger point.
 - **`data-scroll-horizontal`**: Changes the scroll direction that triggers the animation from vertical to horizontal.
-- **`data-indicator-color`**: Customizes the color of
-
- scroll animation indicators for development and debugging purposes.
+- **`data-indicator-color`**: Customizes the color of scroll animation indicators for development and debugging purposes.
 - **`data-indicator-force`**: Forces the display of scroll animation indicators for specific elements, useful for debugging.
 
 Utilizing these `data-attributes` provides granular control over the behavior of scroll-triggered animations, enhancing the interactivity and dynamism of your web content.
