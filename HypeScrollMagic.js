@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic v1.0.5
+ * Hype ScrollMagic v1.0.6
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
@@ -12,6 +12,7 @@
  * 1.0.3 Added behavior triggers, default options and better markers
  * 1.0.4 Added horizontal support data-scroll-horizontal, better marker support
  * 1.0.5 Fixed issue with options, refactored data-marker-* to data-indicator-*
+ * 1.0.6 Removed HypeRulerHelper as the debugging plugin now operates independently
  */
 
  if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -250,7 +251,7 @@
     window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
     return {
-        version: '1.0.5',
+        version: '1.0.6',
         setDefault: setDefault,
         getDefault: getDefault,
     };
