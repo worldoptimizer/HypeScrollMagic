@@ -20,7 +20,7 @@ For a quick start, it's possible to incorporate ScrollMagic and HypeScrollMagic 
 
 <small>CDN Version</small>
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/ScrollMagic.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/ScrollMagic.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeScrollMagic/HypeScrollMagic.min.js"></script>
 ```
 
@@ -28,7 +28,7 @@ To aid in debugging your scroll animations, you can utilize an optional debuggin
 
 <small>CDN Version (Including Debugging Tools)</small>
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/ScrollMagic.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.8/ScrollMagic.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeScrollMagic/HypeScrollMagic.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeRulerHelper/HypeRulerHelper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/worldoptimizer/HypeScrollMagic/HypeScrollMagic.pluginDebug.min.js"></script>
