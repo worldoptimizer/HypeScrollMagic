@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic v1.0.7
+ * Hype ScrollMagic v1.0.8
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
@@ -14,6 +14,8 @@
  * 1.0.5 Fixed issue with options, refactored data-marker-* to data-indicator-*
  * 1.0.6 Removed HypeRulerHelper as the debugging plugin now operates independently
  * 1.0.7 Fixed issue with horizontal and vertical controllers
+ * 1.0.8 Added +, -, *, % to offset and duration values
+ *       Fixed issue with indicator color being set to black
  */
 
  if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -75,22 +77,6 @@
         // return specific default
         return _default[key];
     }
-    
-    /**
-     * @function debounceByRequestFrame
-     * @param {function} fn - the function to be debounced
-     * @returns {function} - the debounced function
-     */
-    function debounceByRequestFrame(fn) {
-        return function() {
-            if (fn.timeout) return;
-            var args = arguments;
-            fn.timeout = requestAnimationFrame(function() {
-                fn.apply(this, args);
-                fn.timeout = null;
-            }.bind(this));
-        };
-    }
 
     /**
      * @function getSymbolInstance
@@ -143,8 +129,8 @@
 
         const scene = new ScrollMagic.Scene({
             triggerElement: sceneElement,
-            offset: offset,
-            duration: duration,
+            offset: getOffsetValue(offset, cumulativeOffset),
+            duration: getOffsetValue(duration, elementDimension),
             triggerHook: triggerHookValue,
         });
 
@@ -184,7 +170,7 @@
             });
         }
         
-	scene.addTo(controllers[controllerId]);
+	    scene.addTo(controllers[controllerId]);
 
         if (scene.addIndicators && (_default.addIndicators || options.addIndicators)) {
             scene.addIndicators({
@@ -196,8 +182,29 @@
         }
 
         scenes.push(scene);
-
         return scene;
+    }
+
+    /**
+     * @function getOffsetValue
+     * @param {string|number} offset - the offset value
+     * @param {number} cumulativeOffset - the cumulative offset
+     * @returns {number} - the offset value
+     */
+    function getOffsetValue(offset, cumulativeOffset) {
+        if (typeof offset === 'string') {
+            offset = offset.trim();
+            if (offset.startsWith('+')) {
+                return cumulativeOffset + parseFloat(offset.substring(1));
+            } else if (offset.startsWith('-')) {
+                return cumulativeOffset - parseFloat(offset.substring(1));
+            } else if (offset.startsWith('*')) {
+                return cumulativeOffset * parseFloat(offset.substring(1));
+            } else if (offset.endsWith('%')) {
+                return parseFloat(offset.slice(0, -1)) * cumulativeOffset / 100;
+            }
+        }
+        return parseFloat(offset);
     }
 
     function HypeDocumentLoad(hypeDocument, element, event) {
@@ -213,20 +220,20 @@
             
             const options = {
                 pin: element.hasAttribute('data-scroll-pin'),
-                offset: element.getAttribute('data-scroll-offset') ? parseInt(element.getAttribute('data-scroll-offset'), 10) : undefined,
-                duration: element.getAttribute('data-scroll-duration') ? parseInt(element.getAttribute('data-scroll-duration'), 10) : undefined,
+                offset: element.getAttribute('data-scroll-offset') ? element.getAttribute('data-scroll-offset') : undefined,
+                duration: element.getAttribute('data-scroll-duration') ? element.getAttribute('data-scroll-duration') : undefined,
                 triggerHook: element.getAttribute('data-scroll-trigger') ? parseFloat(element.getAttribute('data-scroll-trigger')) : undefined,
                 reset: element.getAttribute('data-scroll-reset') === 'false' ? false : true,
                 horizontal: element.hasAttribute('data-scroll-horizontal'),
-                indicatorColor: element.getAttribute('data-indicator-color') || _default.indicatorColor,
             };
+
+            if (element.getAttribute('data-indicator-color')) options.indicatorColor = element.getAttribute('data-indicator-color');
             if (element.hasAttribute('data-indicator-force')) options.addIndicators = true;
     
             timelineNames.forEach(timelineName => {
                 addScrollTimeline(hypeDocument, element, timelineName, options);
             });
         });
-
     }
 
     function HypeSceneUnload(hypeDocument, sceneElement) {
@@ -253,7 +260,7 @@
     window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
     return {
-        version: '1.0.7',
+        version: '1.0.8',
         setDefault: setDefault,
         getDefault: getDefault,
     };
