@@ -14,7 +14,7 @@
  * 1.0.5 Fixed issue with options, refactored data-marker-* to data-indicator-*
  * 1.0.6 Removed HypeRulerHelper as the debugging plugin now operates independently
  * 1.0.7 Fixed issue with horizontal and vertical controllers
- * 1.0.8 Added +, -, *, % to offset and duration values
+ * 1.0.8 Added +=, -=, *=, /=, %= support for offset and duration (plus % of vh for duration)
  *       Fixed issue with indicator color being set to black
  */
 
@@ -174,7 +174,7 @@
 
         if (scene.addIndicators && (_default.addIndicators || options.addIndicators)) {
             scene.addIndicators({
-                name: timelineName,
+                name: timelineName || 'only pin',
                 colorStart: options.indicatorColor,
                 colorEnd: options.indicatorColor,
                 colorTrigger: options.indicatorColor,
@@ -194,14 +194,18 @@
     function getOffsetValue(offset, cumulativeOffset) {
         if (typeof offset === 'string') {
             offset = offset.trim();
-            if (offset.startsWith('+')) {
-                return cumulativeOffset + parseFloat(offset.substring(1));
-            } else if (offset.startsWith('-')) {
-                return cumulativeOffset - parseFloat(offset.substring(1));
-            } else if (offset.startsWith('*')) {
-                return cumulativeOffset * parseFloat(offset.substring(1));
+            if (offset.startsWith('+=')) {
+                return cumulativeOffset + parseFloat(offset.substring(2));
+            } else if (offset.startsWith('-=')) {
+                return cumulativeOffset - parseFloat(offset.substring(2));
+            } else if (offset.startsWith('*=')) {
+                return cumulativeOffset * parseFloat(offset.substring(2));
+            } else if (offset.startsWith('/=')) {
+                return cumulativeOffset / parseFloat(offset.substring(2));
+            } else if (offset.startsWith('%=')) {
+                return cumulativeOffset * parseFloat(offset.substring(2)) / 100;
             } else if (offset.endsWith('%')) {
-                return parseFloat(offset.slice(0, -1)) * cumulativeOffset / 100;
+                return offset;
             }
         }
         return parseFloat(offset);
