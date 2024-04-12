@@ -49,7 +49,7 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 
 - **`data-scroll-timeline`**: Links an HTML element to a specific Hype timeline or timelines. Specify one or multiple timeline names separated by commas to trigger upon scrolling. While `data-scroll-offset` and `data-scroll-duration` are essential attributes for defining the start point and length of the scroll animation respectively, if they are not explicitly declared, `HypeScrollMagic` will assume these values based on the element's bounding box dimensions. This ensures that animations are still triggered effectively based on the element's position and size within the webpage, even in the absence of specific `data-scroll-offset` and `data-scroll-duration` values.
 
-### Optional Data-Attributes
+### Basic Data Attributes
 
 - **`data-scroll-pin`**: Pins the element in place for the duration of the scroll animation. No value is required; the presence of the attribute activates pinning.
 - **`data-scroll-offset`**: Adjusts the start point of the animation relative to the trigger element, specified in pixels.
@@ -57,8 +57,25 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 - **`data-scroll-trigger`**: Specifies the viewport position at which the animation should start, as a fraction of the viewport height.
 - **`data-scroll-reset`**: If set to `false`, prevents the animation from resetting to its start state when scrolled back above the trigger point.
 - **`data-scroll-horizontal`**: Changes the scroll direction that triggers the animation from vertical to horizontal.
+
+### CSS variable Attribute
+
+- **`data-scroll-progress-var`**: Links the scroll progress to a CSS variable, enabling dynamic CSS effects based on scroll position. The attribute's value specifies the name of the CSS variable within the Hype document scope that will reflect the scroll progress. If no value is provided, the variable defaults to `--scroll-progress` within the scope of the element itself.
+
+### Indicator-Dependent Data Attributes (Requires Plugin Debug)
+
 - **`data-indicator-color`**: Customizes the color of scroll animation indicators for development and debugging purposes.
 - **`data-indicator-force`**: Forces the display of scroll animation indicators for specific elements, useful for debugging.
+
+### Action-Dependent Data Attributes (Requires Hype Action Events)
+
+- **`data-scroll-progress-action`**: Specifies the action to trigger as the scroll animation progresses. This attribute should contain the code to be executed, facilitating dynamic interactions based on the scroll position. Requires Hype Action Events to be implemented.
+
+- **`data-scroll-enter-action`**: Executes a custom script or action when the scroll enters the animation trigger area. This can be used for initialization effects or setting properties when the scroll animation starts. Requires Hype Action Events to be implemented.
+
+- **`data-scroll-leave-action`**: Executes a custom script or action when the scroll leaves the animation trigger area. This allows for cleanup actions or effects that are triggered when the scroll animation ends or exits the trigger area. Requires Hype Action Events to be implemented.
+
+
 
 Utilizing these `data-attributes` provides granular control over the behavior of scroll-triggered animations, enhancing the interactivity and dynamism of your web content.
 
