@@ -201,7 +201,7 @@
             });
         }
         
-	    scene.addTo(controllers[controllerId]);
+	scene.addTo(controllers[controllerId]);
 
         if (scene.addIndicators && (_default.addIndicators || options.addIndicators)) {
             scene.addIndicators({
