@@ -14,8 +14,11 @@
  * 1.0.5 Fixed issue with options, refactored data-marker-* to data-indicator-*
  * 1.0.6 Removed HypeRulerHelper as the debugging plugin now operates independently
  * 1.0.7 Fixed issue with horizontal and vertical controllers
- * 1.0.8 Added +=, -=, *=, /=, %= support for offset and duration (plus % of vh for duration)
+ * 1.0.8 Added +=, -=, *=, /=, %= support for offset and duration
+ *       Added support for Hype Action Events
+ *       Added support for CSS variables to track scroll progress
  *       Fixed issue with indicator color being set to black
+ *       Fixed issue with missing timeline name allowing pinning only
  */
 
  if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -106,6 +109,7 @@
         const axis = options.horizontal? '_h' : '_v';
         const sceneId = hypeDocument.currentSceneId();
         const controllerId = sceneId + axis;
+        const hasActionEvents = "HypeActionEvents" in window !== false;
         
         if (!controllers[controllerId]) {
             controllers[controllerId] = new ScrollMagic.Controller({
@@ -113,7 +117,8 @@
             });
         }
 
-        timelineName = timelineName || _default.timelineName;
+        //timelineName = timelineName || _default.timelineName;
+
         options = Object.assign({}, _default.options, options);
 
         const sceneElement = document.getElementById(sceneId);
@@ -140,33 +145,59 @@
             });
         }
 
-        if (options.reset) scene.on("add", function (event) {
+        if (timelineName && options.reset) scene.on("add", function (event) {
             api.pauseTimelineNamed(timelineName);
             api.goToTimeInTimelineNamed(0, timelineName);
         });
         
         scene.on("progress", function (event) {
-            const duration = api.durationForTimelineNamed(timelineName);
-            if (duration === 0) return;
-            api.goToTimeInTimelineNamed(event.progress * duration, timelineName);
+            if (hasActionEvents) {
+                const code = element.getAttribute('data-scroll-progress-action');
+                if (code) hypeDocument.triggerAction(code, Object.assign({
+                    element: element,
+                    event: event,
+                }));
+            }
+            if (element.hasAttribute('data-scroll-progress-var')) {
+                const varName = element.getAttribute('data-scroll-progress-var');
+                if (varName) {
+                    const hypeDocumentElem = document.getElementById(hypeDocument.documentId());
+                    hypeDocumentElem.style.setProperty('--'+varName, event.progress);
+                } else {
+                    element.style.setProperty('--scroll-progress', event.progress);
+                }
+            }
+            if (timelineName) {
+                const duration = api.durationForTimelineNamed(timelineName);
+                if (duration !== 0) {
+                    api.goToTimeInTimelineNamed(event.progress * duration, timelineName);
+                }
+            }
         })
         
-        function triggerBehavior(eventType, event) {
+        function triggerBehaviorAndAction(eventType, event) {
             const eventScrollDirection = event.scrollDirection.charAt(0).toUpperCase() + event.scrollDirection.slice(1).toLowerCase();
             const behavior = timelineName + ' ' + eventType + ' ' + eventScrollDirection
             hypeDocument.triggerCustomBehaviorNamed(behavior);
             if (_default.logBehavior) console.log(behavior);
+            if (hasActionEvents) {
+                const code = element.getAttribute('data-scroll-' + eventType.toLowerCase() + '-action');
+                if (code) hypeDocument.triggerAction(code, Object.assign({
+                    element: element,
+                    event: event,
+                }));
+            }
         }
 
         if (_default.behavior.enter) {
             scene.on("enter", function(event) {
-                triggerBehavior('Enter', event);
+                triggerBehaviorAndAction('Enter', event);
             });
         }
 
         if (_default.behavior.leave) {
             scene.on("leave", function(event) {
-                triggerBehavior('Leave', event);
+                triggerBehaviorAndAction('Leave', event);
             });
         }
         
@@ -220,8 +251,12 @@
     function HypeSceneLoad(hypeDocument, sceneElement) {
         const scrollElements = sceneElement.querySelectorAll('[data-scroll-timeline],[data-scroll-pin]');
         scrollElements.forEach(function (element) {
-            const timelineNames = element.getAttribute('data-scroll-timeline') ? element.getAttribute('data-scroll-timeline').split(',').map(name => name.trim()) : ['Main Timeline'];
-            
+            // const timelineNames = element.getAttribute('data-scroll-timeline') ? element.getAttribute('data-scroll-timeline').split(',').map(name => name.trim()) : ['Main Timeline'];
+            const timelineNames = element.hasAttribute('data-scroll-timeline') ? 
+                (element.getAttribute('data-scroll-timeline') ? 
+                    element.getAttribute('data-scroll-timeline').split(',').map(name => name.trim()) : 
+                    [_default.timelineName]) : 
+                [null];
             const options = {
                 pin: element.hasAttribute('data-scroll-pin'),
                 offset: element.getAttribute('data-scroll-offset') ? element.getAttribute('data-scroll-offset') : undefined,
