@@ -19,7 +19,7 @@
  *           data-scroll-offset-action, data-scroll-duration-action, 
  *           data-scroll-trigger-action, data-scroll-progress-action, 
  *           data-scroll-enter-action, data-scroll-leave-action
- *       Added support for CSS variables to track scroll progress
+ *       Added support for CSS variables to track scroll progress, duration and offset
  *       Fixed issue with indicator color being set to black
  *       Fixed issue with missing timeline name allowing pinning only
  */
@@ -181,6 +181,18 @@
             triggerHook: triggerHook,
         });
 
+        if (element.hasAttribute('data-scroll-properties')) {
+            const varName = element.getAttribute('data-scroll-properties');
+            if (varName) {
+                const hypeDocumentElem = document.getElementById(hypeDocument.documentId());
+                hypeDocumentElem.style.setProperty('--'+varName+'-duration', duration);
+                hypeDocumentElem.style.setProperty('--'+varName+'-offset', offset);
+            } else {
+                element.style.setProperty('--scroll-duration', duration);
+                element.style.setProperty('--scroll-offset', offset);
+            }
+        }
+
         if (options.pin) {
             scene.setPin(element, {
                 pushFollowers: false,
@@ -201,11 +213,11 @@
                 }));
             }
 
-            if (element.hasAttribute('data-scroll-progress-var')) {
-                const varName = element.getAttribute('data-scroll-progress-var');
+            if (element.hasAttribute('data-scroll-properties')) {
+                const varName = element.getAttribute('data-scroll-properties');
                 if (varName) {
                     const hypeDocumentElem = document.getElementById(hypeDocument.documentId());
-                    hypeDocumentElem.style.setProperty('--'+varName, event.progress);
+                    hypeDocumentElem.style.setProperty('--'+varName+'-progress', event.progress);
                 } else {
                     element.style.setProperty('--scroll-progress', event.progress);
                 }
