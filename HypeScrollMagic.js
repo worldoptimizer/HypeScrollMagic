@@ -14,8 +14,11 @@
  * 1.0.5 Fixed issue with options, refactored data-marker-* to data-indicator-*
  * 1.0.6 Removed HypeRulerHelper as the debugging plugin now operates independently
  * 1.0.7 Fixed issue with horizontal and vertical controllers
- * 1.0.8 Added +=, -=, *=, /=, %= support for offset and duration
- *       Added support for Hype Action Events
+ * 1.0.8 Added support duration as percentage
+ *       Added support for Hype Action Events: 
+ *           data-scroll-offset-action, data-scroll-duration-action, 
+ *           data-scroll-trigger-action, data-scroll-progress-action, 
+ *           data-scroll-enter-action, data-scroll-leave-action
  *       Added support for CSS variables to track scroll progress
  *       Fixed issue with indicator color being set to black
  *       Fixed issue with missing timeline name allowing pinning only
@@ -126,17 +129,56 @@
         const elementDimension = element.getBoundingClientRect()[options.horizontal? 'width' : 'height'];
         const cumulativeOffset = options.horizontal? element.getBoundingClientRect().left - sceneElement.getBoundingClientRect().left : element.getBoundingClientRect().top - sceneElement.getBoundingClientRect().top;
 
-        const offset = options.offset !== undefined ? options.offset : cumulativeOffset;
-        const duration = options.duration !== undefined ? options.duration : elementDimension;
-        const triggerHookValue = options.triggerHook !== undefined ? options.triggerHook : 0.5;
+        let offset = options.offset !== undefined ? options.offset : cumulativeOffset;
+        let duration = options.duration !== undefined ? options.duration : elementDimension;
+        const triggerHook = options.triggerHook !== undefined ? options.triggerHook : 0.5;
         const symbolInstance = getSymbolInstance(hypeDocument, element);
         const api = symbolInstance ? symbolInstance : hypeDocument;
 
+        if (typeof duration === 'string') {
+            if (!duration.endsWith('%')) {
+                duration = parseInt(duration);
+            }
+        }
+
+        if (typeof offset === 'string') {
+            offset = parseInt(offset);
+        }
+
+        if (hasActionEvents) {
+            const offsetCode = element.getAttribute('data-scroll-offset-action');
+            const durationCode = element.getAttribute('data-scroll-duration-action');
+            const triggerHookCode = element.getAttribute('data-scroll-trigger-action');
+            const scope = {
+                offset: offset,
+                duration: duration,
+                triggerHook: triggerHook,
+            }
+            if (offsetCode) {
+                offset = hypeDocument.triggerAction('return '+offsetCode, {
+                    element: element,
+                    scope: scope,
+                });
+            }
+            if (durationCode) {
+                duration = hypeDocument.triggerAction('return '+durationCode, {
+                    element: element,
+                    scope: scope
+                });
+            }
+            if (triggerHookCode) {
+                triggerHook = hypeDocument.triggerAction('return '+triggerHookCode, {
+                    element: element,
+                    scope: scope
+                });
+            }
+        }
+        
         const scene = new ScrollMagic.Scene({
             triggerElement: sceneElement,
-            offset: getOffsetValue(offset, cumulativeOffset),
-            duration: getOffsetValue(duration, elementDimension),
-            triggerHook: triggerHookValue,
+            offset: offset,
+            duration: duration,
+            triggerHook: triggerHook,
         });
 
         if (options.pin) {
@@ -158,6 +200,7 @@
                     event: event,
                 }));
             }
+
             if (element.hasAttribute('data-scroll-progress-var')) {
                 const varName = element.getAttribute('data-scroll-progress-var');
                 if (varName) {
@@ -167,6 +210,7 @@
                     element.style.setProperty('--scroll-progress', event.progress);
                 }
             }
+
             if (timelineName) {
                 const duration = api.durationForTimelineNamed(timelineName);
                 if (duration !== 0) {
@@ -179,13 +223,15 @@
             const eventScrollDirection = event.scrollDirection.charAt(0).toUpperCase() + event.scrollDirection.slice(1).toLowerCase();
             const behavior = timelineName + ' ' + eventType + ' ' + eventScrollDirection
             hypeDocument.triggerCustomBehaviorNamed(behavior);
+            
             if (_default.logBehavior) console.log(behavior);
+            
             if (hasActionEvents) {
                 const code = element.getAttribute('data-scroll-' + eventType.toLowerCase() + '-action');
-                if (code) hypeDocument.triggerAction(code, Object.assign({
+                if (code) hypeDocument.triggerAction(code, {
                     element: element,
                     event: event,
-                }));
+                });
             }
         }
 
@@ -201,7 +247,7 @@
             });
         }
         
-	scene.addTo(controllers[controllerId]);
+	    scene.addTo(controllers[controllerId]);
 
         if (scene.addIndicators && (_default.addIndicators || options.addIndicators)) {
             scene.addIndicators({
@@ -214,32 +260,6 @@
 
         scenes.push(scene);
         return scene;
-    }
-
-    /**
-     * @function getOffsetValue
-     * @param {string|number} offset - the offset value
-     * @param {number} cumulativeOffset - the cumulative offset
-     * @returns {number} - the offset value
-     */
-    function getOffsetValue(offset, cumulativeOffset) {
-        if (typeof offset === 'string') {
-            offset = offset.trim();
-            if (offset.startsWith('+=')) {
-                return cumulativeOffset + parseFloat(offset.substring(2));
-            } else if (offset.startsWith('-=')) {
-                return cumulativeOffset - parseFloat(offset.substring(2));
-            } else if (offset.startsWith('*=')) {
-                return cumulativeOffset * parseFloat(offset.substring(2));
-            } else if (offset.startsWith('/=')) {
-                return cumulativeOffset / parseFloat(offset.substring(2));
-            } else if (offset.startsWith('%=')) {
-                return cumulativeOffset * parseFloat(offset.substring(2)) / 100;
-            } else if (offset.endsWith('%')) {
-                return offset;
-            }
-        }
-        return parseFloat(offset);
     }
 
     function HypeDocumentLoad(hypeDocument, element, event) {
