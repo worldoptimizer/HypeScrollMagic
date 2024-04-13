@@ -131,7 +131,7 @@
 
         let offset = options.offset !== undefined ? options.offset : cumulativeOffset;
         let duration = options.duration !== undefined ? options.duration : elementDimension;
-        const triggerHook = options.triggerHook !== undefined ? options.triggerHook : 0.5;
+        let triggerHook = options.triggerHook !== undefined ? options.triggerHook : 0.5;
         const symbolInstance = getSymbolInstance(hypeDocument, element);
         const api = symbolInstance ? symbolInstance : hypeDocument;
 
