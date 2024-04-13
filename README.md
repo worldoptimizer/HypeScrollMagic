@@ -63,7 +63,7 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 
 - **`data-scroll-properties`**: This attribute dynamically links CSS variables to scroll activity, enabling styled effects based on scroll position. It specifies the names of the CSS variables that should be updated within the scope of the Hype document according to scroll progress, duration, and offset. If a specific value is provided for `data-scroll-properties`, such as `sample`, the corresponding CSS variables within the element's scope are named `--sample-progress`, `--sample-duration`, and `--sample-offset`. If no value is specified, the default variables `--scroll-progress`, `--scroll-duration`, and `--scroll-offset` are used. This functionality allows for sophisticated integration of CSS-driven animations and effects based on user interaction with scrollable content.
 
-For example:
+#### For example:
 
 This example that uses the CSS properties defined through the `data-scroll-properties` as `sample` to dynamically adjust the letter-spacing of an element based on the scroll progress. The letter-spacing will increase as you scroll further:
 
