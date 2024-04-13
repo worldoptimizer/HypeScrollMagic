@@ -59,9 +59,10 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 - **`data-scroll-reset`**: If set to `false`, prevents the animation from resetting to its start state when scrolled back above the trigger point.
 - **`data-scroll-horizontal`**: Changes the scroll direction that triggers the animation from vertical to horizontal.
 
-### CSS variable Attribute
+### CSS Variable Attribute
 
-- **`data-scroll-progress-var`**: Links the scroll progress to a CSS variable, enabling dynamic CSS effects based on scroll position. The attribute's value specifies the name of the CSS variable within the Hype document scope that will reflect the scroll progress. If no value is provided, the variable defaults to `--scroll-progress` within the scope of the element itself.
+- **`data-scroll-properties`**: This attribute dynamically links CSS variables to scroll activity, enabling styled effects based on scroll position. It specifies the names of the CSS variables that should be updated within the scope of the Hype document according to scroll progress, duration, and offset. If a specific value is provided for `data-scroll-properties`, such as `sample`, the corresponding CSS variables within the element's scope are named `--sample-progress`, `--sample-duration`, and `--sample-offset`. If no value is specified, the default variables `--scroll-progress`, `--scroll-duration`, and `--scroll-offset` are used. This functionality allows for sophisticated integration of CSS-driven animations and effects based on user interaction with scrollable content.
+
 
 ### Indicator-Dependent Data Attributes (Requires Plugin Debug)
 
