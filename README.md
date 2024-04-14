@@ -82,15 +82,27 @@ In this example, the `letter-spacing` property of elements with the class `.dyna
 
 ### Action-Dependent Data Attributes (Requires Hype Action Events)
 
+#### Initialization Actions
+
+- **`data-scroll-offset-action`**: This attribute specifies custom logic to dynamically calculate the initial offset for the scroll interaction. The action code should return a numeric value representing the offset position, modifying how the scroll starts relative to the trigger element.
+
+- **`data-scroll-duration-action`**: Determines the duration of the scroll effect by executing a custom script provided in this attribute. The script should calculate and return the duration, allowing for dynamic adjustments based on content or user interactions.
+
+- **`data-scroll-trigger-action`**: Executes a script to dynamically determine the triggerHook value at runtime. This value influences the point along the scroll where the animation or action should start, providing flexibility to adapt based on dynamic conditions.
+
+#### Animation Actions
+
 - **`data-scroll-progress-action`**: Specifies the action to trigger as the scroll animation progresses. This attribute should contain the code to be executed, facilitating dynamic interactions based on the scroll position. Requires Hype Action Events to be implemented.
 
 - **`data-scroll-enter-action`**: Executes a custom script or action when the scroll enters the animation trigger area. This can be used for initialization effects or setting properties when the scroll animation starts. Requires Hype Action Events to be implemented.
 
 - **`data-scroll-leave-action`**: Executes a custom script or action when the scroll leaves the animation trigger area. This allows for cleanup actions or effects that are triggered when the scroll animation ends or exits the trigger area. Requires Hype Action Events to be implemented.
 
+### Scope and Event Object in Action Calls
 
+When actions are triggered using Hype Action Events, specific scroll-related properties such as `offset`, `duration`, and `triggerHook` are exposed within the scope of the action. This allows for direct manipulation and calculation within the action scripts. For instance, expressions like `offset + duration / 2` can be used directly in `data-scroll-offset-action` or `data-scroll-duration-action` to compute values dynamically based on the current scrolling context.
 
-Utilizing these `data-attributes` provides granular control over the behavior of scroll-triggered animations, enhancing the interactivity and dynamism of your web content.
+In cases where a Hype function is invoked, such as `myOffset()`, Hype automatically populates the function's signature with `hypeDocument`, `element`, and `event`. The scope values (e.g., `duration`, `offset`) are also added to the event object, accessible as `event.duration`, `event.offset`, etc. This integration ensures that all relevant data is readily available within the function for precise control and customization of the scroll behavior.
 
 ## Behaviors
 
