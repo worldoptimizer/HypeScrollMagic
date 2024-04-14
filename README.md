@@ -1,4 +1,4 @@
-# HypeScrollMagic
+# Hype Scroll Magic
 
 ## Overview
 
