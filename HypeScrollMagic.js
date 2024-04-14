@@ -158,18 +158,27 @@
                 offset = hypeDocument.triggerAction('return '+offsetCode, {
                     element: element,
                     scope: scope,
+                    event: Object.assign(scope, {
+                        type: 'offset',
+                    }),
                 });
             }
             if (durationCode) {
                 duration = hypeDocument.triggerAction('return '+durationCode, {
                     element: element,
-                    scope: scope
+                    scope: scope,
+                    event: Object.assign(scope, {
+                        type: 'duration',
+                    }),
                 });
             }
             if (triggerHookCode) {
                 triggerHook = hypeDocument.triggerAction('return '+triggerHookCode, {
                     element: element,
-                    scope: scope
+                    scope: scope,
+                    event: Object.assign(scope, {
+                        type: 'triggerHook',
+                    }),
                 });
             }
         }
