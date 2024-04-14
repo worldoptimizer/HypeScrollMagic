@@ -1,5 +1,9 @@
 # Hype Scroll Magic
 
+
+![Hype-ScrollMagic|690x487](https://playground.maxziebell.de/Hype/ScrollMagic/HypeScrollMagic.jpg)
+
+<sup>The cover artwork is not hosted in this repository and &copy;opyrighted by Max Ziebell</sup>
 ## Overview
 
 `HypeScrollMagic` is a JavaScript extension designed for integration with [Tumult Hype](https://tumult.com/hype/), enabling developers and designers to create interactive, scroll-based animations and interactions within their Hype projects. Leveraging the power of ScrollMagic, this extension makes it easy to trigger animations as users scroll through a webpage, enhancing the storytelling and user engagement of Hype animations.
