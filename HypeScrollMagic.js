@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic v1.0.8
+ * Hype ScrollMagic v1.0.9
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
@@ -22,9 +22,12 @@
  *       Added support for CSS variables to track scroll progress, duration and offset
  *       Fixed issue with indicator color being set to black
  *       Fixed issue with missing timeline name allowing pinning only
+ * 1.0.9 Added support for percentage for offset based on bounding box
+ *       Added Hype Action Event data-scroll-action to all events (event.type based settings)
+ *       Fixed percentage support for duration and offset by precalculating
  */
 
- if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
+if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
     if (!window.ScrollMagic) {
         console.error("ScrollMagic is not available.");
         return;
@@ -136,19 +139,27 @@
         const api = symbolInstance ? symbolInstance : hypeDocument;
 
         if (typeof duration === 'string') {
-            if (!duration.endsWith('%')) {
+            if (duration.endsWith('%')) {
+                const viewport = options.horizontal? window.innerWidth : window.innerHeight;
+                duration = parseFloat(duration) / 100 * viewport;
+            } else {
                 duration = parseInt(duration);
             }
         }
 
         if (typeof offset === 'string') {
-            offset = parseInt(offset);
+            if (offset.endsWith('%')) {
+                offset = parseFloat(offset) / 100 * elementDimension + cumulativeOffset;
+            } else {
+                offset = parseInt(offset);
+            }
         }
 
         if (hasActionEvents) {
-            const offsetCode = element.getAttribute('data-scroll-offset-action');
-            const durationCode = element.getAttribute('data-scroll-duration-action');
-            const triggerHookCode = element.getAttribute('data-scroll-trigger-action');
+            const scrollCode = element.getAttribute('data-scroll-action');
+            const offsetCode = element.getAttribute('data-scroll-offset-action')  || scrollCode;
+            const durationCode = element.getAttribute('data-scroll-duration-action') || scrollCode;
+            const triggerHookCode = element.getAttribute('data-scroll-trigger-action') || scrollCode;
             const scope = {
                 offset: offset,
                 duration: duration,
@@ -161,7 +172,7 @@
                     event: Object.assign(scope, {
                         type: 'offset',
                     }),
-                });
+                }) ?? offset;
             }
             if (durationCode) {
                 duration = hypeDocument.triggerAction('return '+durationCode, {
@@ -170,7 +181,7 @@
                     event: Object.assign(scope, {
                         type: 'duration',
                     }),
-                });
+                }) ?? duration;
             }
             if (triggerHookCode) {
                 triggerHook = hypeDocument.triggerAction('return '+triggerHookCode, {
@@ -179,7 +190,7 @@
                     event: Object.assign(scope, {
                         type: 'triggerHook',
                     }),
-                });
+                }) ?? triggerHook;
             }
         }
         
@@ -215,7 +226,8 @@
         
         scene.on("progress", function (event) {
             if (hasActionEvents) {
-                const code = element.getAttribute('data-scroll-progress-action');
+                const scrollCode = element.getAttribute('data-scroll-action');
+                const code = element.getAttribute('data-scroll-progress-action') || scrollCode;
                 if (code) hypeDocument.triggerAction(code, Object.assign({
                     element: element,
                     event: event,
@@ -248,7 +260,8 @@
             if (_default.logBehavior) console.log(behavior);
             
             if (hasActionEvents) {
-                const code = element.getAttribute('data-scroll-' + eventType.toLowerCase() + '-action');
+                const scrollCode = element.getAttribute('data-scroll-action');
+                const code = element.getAttribute('data-scroll-' + eventType.toLowerCase() + '-action')  || scrollCode;
                 if (code) hypeDocument.triggerAction(code, {
                     element: element,
                     event: event,
@@ -340,7 +353,7 @@
     window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
     return {
-        version: '1.0.8',
+        version: '1.0.9',
         setDefault: setDefault,
         getDefault: getDefault,
     };
