@@ -22,8 +22,8 @@
  *       Added support for CSS variables to track scroll progress, duration and offset
  *       Fixed issue with indicator color being set to black
  *       Fixed issue with missing timeline name allowing pinning only
- * 1.0.9 Added support for percentage for offset based on bounding box
- *       Added Hype Action Event data-scroll-action to all events (event.type based settings)
+ * 1.0.9 Added support for percentage offset based on bounding box
+ *       Added the Hype Action Event data-scroll-action as a catch-all (event.type-based settings)
  *       Fixed percentage support for duration and offset by precalculating
  */
 
