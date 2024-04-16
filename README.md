@@ -72,15 +72,15 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 This example utilizes the CSS properties defined through `data-scroll-properties`. If a variable name is not defined to set the top margin using the local default variables `scroll`, the behavior will default to the local default variables.
 
 ```css
-.dynamic-top-margin {
-  letter-spacing: calc(var(--scroll-progress) * -100px);
+.dynamic-margin-top {
+  margin-top: calc(var(--scroll-progress) * -200px);
 }
 ```
 
 This second example uses `data-scroll-properties` set as `sample` on the Hype document root to dynamically adjust the letter-spacing of an element based on the scroll progress. The letter-spacing will increase as you scroll further:
 
 ```css
-.dynamic-spacing {
+.dynamic-letter-spacing {
   letter-spacing: calc(var(--sample-progress) * 5px);
 }
 ```
