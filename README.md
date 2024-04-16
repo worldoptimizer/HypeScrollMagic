@@ -69,7 +69,15 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 
 #### For example:
 
-This example that uses the CSS properties defined through the `data-scroll-properties` as `sample` to dynamically adjust the letter-spacing of an element based on the scroll progress. The letter-spacing will increase as you scroll further:
+This example utilizes the CSS properties defined through `data-scroll-properties`. If a variable name is not defined to set the top margin using the local default variables `scroll`, the behavior will default to the local default variables.
+
+```css
+.dynamic-top-margin {
+  letter-spacing: calc(var(--scroll-progress) * -100px);
+}
+```
+
+This second example uses `data-scroll-properties` set as `sample` to dynamically adjust the letter-spacing of an element based on the scroll progress. The letter-spacing will increase as you scroll further:
 
 ```css
 .dynamic-spacing {
