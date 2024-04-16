@@ -57,8 +57,8 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 ### Basic Data Attributes
 
 - **`data-scroll-pin`**: Pins the element in place for the duration of the scroll animation. No value is required; the presence of the attribute activates pinning.
-- **`data-scroll-offset`**: Adjusts the start point of the animation relative to the trigger element, specified in pixels.
-- **`data-scroll-duration`**: Defines the length over which the scroll animation plays, in pixels.
+- **`data-scroll-offset`**: Adjusts the start point of the animation relative to the trigger element, specified in pixels. This value can also be expressed as a percentage, representing the corresponding viewport dimension plus the percentage of the corresponding element dimension. For example, in a standard vertical scroll, setting this to 50% would add 50% of the element height to the autodetected top position of the element.
+- **`data-scroll-duration`**: Defines the length over which the scroll animation plays, in pixels. This value can also be expressed as a percentage of the corresponding viewport dimension.
 - **`data-scroll-trigger`**: Specifies the viewport position at which the animation should start, as a fraction of the viewport height.
 - **`data-scroll-reset`**: If set to `false`, prevents the animation from resetting to its start state when scrolled back above the trigger point.
 - **`data-scroll-horizontal`**: Changes the scroll direction that triggers the animation from vertical to horizontal.
@@ -109,6 +109,10 @@ In this example, the `letter-spacing` property of elements with the class `.dyna
 - **`data-scroll-enter-action`**: Executes a custom script or action when the scroll enters the animation trigger area. This can be used for initialization effects or setting properties when the scroll animation starts. Requires Hype Action Events to be implemented.
 
 - **`data-scroll-leave-action`**: Executes a custom script or action when the scroll leaves the animation trigger area. This allows for cleanup actions or effects that are triggered when the scroll animation ends or exits the trigger area. Requires Hype Action Events to be implemented.
+  
+#### Catch all Action
+
+- **`data-scroll-action`**: Serves as a catch-all. It is particularly useful if you wish to link all actions to a single handler function and differentiate return values based on `event.type`.
 
 ### Scope and Event Object in Action Calls
 
