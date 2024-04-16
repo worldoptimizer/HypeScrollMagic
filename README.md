@@ -1,7 +1,7 @@
 # Hype Scroll Magic
 
 
-![Hype-ScrollMagic|690x487](https://playground.maxziebell.de/Hype/ScrollMagic/HypeScrollMagic.jpg)
+![Hype-ScrollMagic](https://playground.maxziebell.de/Hype/ScrollMagic/HypeScrollMagic.jpg)
 
 
 ## Overview
