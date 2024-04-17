@@ -61,17 +61,17 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
   
   | Attribute Usage          | Example        | Description                                          |
   |--------------------------|----------------|------------------------------------------------------|
-  | Percentage of element    | `data-scroll-offset` to '50%' | Adds half of the element's height to the start point. |
-  | Absolute pixels          | `data-scroll-offset` to '100' | Starts the animation 100 pixels down from the top.   |
+  | Percentage of element    | `data-scroll-offset` to `50%` | Adds half of the element's height to the start point. |
+  | Absolute pixels          | `data-scroll-offset` to `100` | Starts the animation 100 pixels down from the top.   |
 
 
 - **`data-scroll-duration`**: Defines the duration over which the scroll animation runs, specified in pixels, 'vw' for viewport width, 'vh' for viewport height, or as a percentage of the element’s dimension. If not set, the default spans the size of the element's bounding box.
   
   | Attribute Usage          | Example                 | Description                                             |
   |--------------------------|-------------------------|---------------------------------------------------------|
-  | Viewport height          | `data-scroll-duration` to '100vh' | Duration equals the full height of the viewport.        |
-  | Percentage of element    | `data-scroll-duration` to '50%'   | Animation lasts for half of the element’s dimension.    |
-  | Absolute pixels          | `data-scroll-duration` to '500'   | Specifies the animation duration as 500 pixels.         |
+  | Viewport height          | `data-scroll-duration` to `100vh` | Duration equals the full height of the viewport.        |
+  | Percentage of element    | `data-scroll-duration` to `50%`   | Animation lasts for half of the element’s dimension.    |
+  | Absolute pixels          | `data-scroll-duration` to `500`   | Specifies the animation duration as 500 pixels.         |
 
 
 
