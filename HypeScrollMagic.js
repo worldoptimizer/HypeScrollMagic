@@ -27,7 +27,8 @@
  *       Fixed percentage support for duration and offset by precalculating
  * 1.1.0 Added query to make sure data-scroll-properties add scroll listeners
  *       Added query to make sure that Hype Action Event scroll actions add scroll listeners 
- * 
+ *       Added more robust controller and scene management and garbage collection
+ *       Removed all dataset references from addScrollTimeline to avoid side effects
  */
 
 if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -40,7 +41,7 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
     }
     
     const controllers = {};
-    const scenes = [];
+    const scenes = {};
 
     /* default options */
     let _default = {
@@ -57,6 +58,7 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
         timelineName: 'Main Timeline',
         logBehavior: false,
         addIndicators: true,
+        autoProperties: true,
     };
 
     /**
@@ -115,18 +117,15 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
      */
     function addScrollTimeline(hypeDocument, element, timelineName, options) {
         
-        const axis = options.horizontal? '_h' : '_v';
         const sceneId = hypeDocument.currentSceneId();
-        const controllerId = sceneId + axis;
         const hasActionEvents = "HypeActionEvents" in window !== false;
-        console.log('controllerId', controllerId, controllers[controllerId])
-        if (!controllers[controllerId]) {
-            controllers[controllerId] = new ScrollMagic.Controller({
-             vertical: options.horizontal? false : true,
-            });
-        } else {
-            return;
-        }
+        
+        const controller = new ScrollMagic.Controller({
+            vertical: options.horizontal? false : true,
+        });
+
+        if (!controllers[sceneId]) controllers[sceneId] = [];
+        controllers[sceneId].push(controller);
 
         options = Object.assign({}, _default.options, options);
 
@@ -142,11 +141,13 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
         const api = symbolInstance ? symbolInstance : hypeDocument;
 
         if (typeof duration === 'string') {
-            if (duration.endsWith('%')) {
-                const viewport = options.horizontal? window.innerWidth : window.innerHeight;
-                duration = parseFloat(duration) / 100 * viewport;
+            const viewportUnit = options.horizontal? 'vw' : 'vh';
+            if (duration.endsWith(viewportUnit)) {
+                duration = parseInt(duration)+'%';
+            } else if (duration.endsWith('%')) {
+                duration = parseFloat(duration) / 100 * elementDimension;
             } else {
-                duration = parseInt(duration);
+                duration = parseFloat(duration);
             }
         }
 
@@ -154,15 +155,15 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
             if (offset.endsWith('%')) {
                 offset = parseFloat(offset) / 100 * elementDimension + cumulativeOffset;
             } else {
-                offset = parseInt(offset);
+                offset = parseFloat(offset);
             }
         }
 
         if (hasActionEvents) {
-            const scrollCode = element.getAttribute('data-scroll-action');
-            const offsetCode = element.getAttribute('data-scroll-offset-action')  || scrollCode;
-            const durationCode = element.getAttribute('data-scroll-duration-action') || scrollCode;
-            const triggerHookCode = element.getAttribute('data-scroll-trigger-action') || scrollCode;
+            const scrollCode = options.scrollCode;
+            const offsetCode = options.offsetCode || scrollCode;
+            const durationCode = options.durationCode || scrollCode;
+            const triggerHookCode = options.triggerHookCode || scrollCode;
             const scope = {
                 offset: offset,
                 duration: duration,
@@ -204,8 +205,8 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
             triggerHook: triggerHook,
         });
 
-        if (element.hasAttribute('data-scroll-properties')) {
-            const varName = element.getAttribute('data-scroll-properties') || 'scroll';
+        if (options.hasOwnProperty('properties')){
+            const varName = typeof options.properties === 'string' ? options.properties || 'scroll' : 'scroll';
             const rootElm = varName === 'scroll' ? element : document.getElementById(hypeDocument.documentId());
             rootElm.style.setProperty('--'+varName+'-duration', duration);
             rootElm.style.setProperty('--'+varName+'-offset', offset);
@@ -226,16 +227,16 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
         
         scene.on("progress", function (event) {
             if (hasActionEvents) {
-                const scrollCode = element.getAttribute('data-scroll-action');
-                const code = element.getAttribute('data-scroll-progress-action') || scrollCode;
+                const scrollCode = options.scrollCode;
+                const code = options.progressCode || scrollCode;
                 if (code) hypeDocument.triggerAction(code, Object.assign({
                     element: element,
                     event: event,
                 }));
             }
 
-            if (element.hasAttribute('data-scroll-properties')) {
-                const varName = element.getAttribute('data-scroll-properties') || 'scroll';
+            if (options.hasOwnProperty('properties')){
+                const varName = typeof options.properties === 'string' ? options.properties || 'scroll' : 'scroll';
                 const rootElm = varName === 'scroll' ? element : document.getElementById(hypeDocument.documentId());
                 rootElm.style.setProperty('--'+varName+'-progress', event.progress);
             }
@@ -256,8 +257,8 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
             if (_default.logBehavior) console.log(behavior);
             
             if (hasActionEvents) {
-                const scrollCode = element.getAttribute('data-scroll-action');
-                const code = element.getAttribute('data-scroll-' + eventType.toLowerCase() + '-action')  || scrollCode;
+                const scrollCode = options.scrollCode;
+                const code = options[eventType.toLowerCase() + 'Code']  || scrollCode;
                 if (code) hypeDocument.triggerAction(code, {
                     element: element,
                     event: event,
@@ -277,7 +278,7 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
             });
         }
         
-	    scene.addTo(controllers[controllerId]);
+	    scene.addTo(controller);
 
         if (scene.addIndicators && (_default.addIndicators || options.addIndicators)) {
             scene.addIndicators({
@@ -288,7 +289,8 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
             });
         }
 
-        scenes.push(scene);
+        if (!scenes[sceneId]) scenes[sceneId] = [];
+        scenes[sceneId].push(scene);
         return scene;
     }
 
@@ -308,6 +310,7 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
                     element.getAttribute('data-scroll-timeline').split(',').map(name => name.trim()) : 
                     [_default.timelineName]) : 
                 [null];
+            
             const options = {
                 pin: element.hasAttribute('data-scroll-pin'),
                 offset: element.getAttribute('data-scroll-offset') ? element.getAttribute('data-scroll-offset') : undefined,
@@ -317,29 +320,44 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
                 horizontal: element.hasAttribute('data-scroll-horizontal'),
             };
 
+            if (hasActionEvents) {
+                if (element.hasAttribute('data-scroll-action')) options.scrollCode = element.getAttribute('data-scroll-action');
+                if (element.hasAttribute('data-scroll-offset-action')) options.offsetCode = element.getAttribute('data-scroll-offset-action');
+                if (element.hasAttribute('data-scroll-duration-action')) options.durationCode = element.getAttribute('data-scroll-duration-action');
+                if (element.hasAttribute('data-scroll-trigger-action')) options.triggerHookCode = element.getAttribute('data-scroll-trigger-action');
+                if (element.hasAttribute('data-scroll-progress-action')) options.progressCode = element.getAttribute('data-scroll-progress-action');
+                if (element.hasAttribute('data-scroll-enter-action')) options.enterCode = element.getAttribute('data-scroll-enter-action');
+                if (element.hasAttribute('data-scroll-leave-action')) options.leaveCode = element.getAttribute('data-scroll-leave-action');
+            }
+
+            if (element.hasAttribute('data-scroll-properties')) {
+                const properties = element.getAttribute('data-scroll-properties');
+                if (!(getDefault('autoProperties') && properties == 'false')) options.properties = properties;
+            } else if (getDefault('autoProperties')) {
+                options.properties = true;
+            }
+
             if (element.getAttribute('data-indicator-color')) options.indicatorColor = element.getAttribute('data-indicator-color');
             if (element.hasAttribute('data-indicator-force')) options.addIndicators = true;
-    
+            
             timelineNames.forEach(timelineName => {
                 addScrollTimeline(hypeDocument, element, timelineName, options);
             });
         });
     }
 
-    function HypeSceneUnload(hypeDocument, sceneElement) {
-        const sceneId = sceneElement.id;
-        scenes.forEach(function (scene) {
-            scene.destroy(true);
+    function HypeSceneUnload(hypeDocument, element) {        
+        const sceneId = element.id;
+
+        scenes[sceneId].forEach(scene => {
+            if (scene) scene.destroy(true);
         });
-        scenes.length = 0;
-        if (controllers[sceneId+'_v']) {
-            controllers[sceneId+'_v'].destroy(true);
-            delete controllers[sceneId+'_v'];
-        }
-        if (controllers[sceneId+'_h']) {
-            controllers[sceneId+'_h'].destroy(true);
-            delete controllers[sceneId+'_h'];
-        }
+        scenes[sceneId] = [];
+        
+        controllers[sceneId].forEach(controller => {
+            if (controller) controller.destroy(true);
+        });
+        controllers[sceneId] = [];
     }
 
     if ("HYPE_eventListeners" in window === false) {
