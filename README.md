@@ -57,8 +57,24 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 ### Basic Data Attributes
 
 - **`data-scroll-pin`**: Pins the element in place for the duration of the scroll animation. No value is required; the presence of the attribute activates pinning.
-- **`data-scroll-offset`**: Adjusts the start point of the animation relative to the trigger element, specified in pixels. This value can also be expressed as a percentage, representing the corresponding viewport dimension plus the percentage of the corresponding element dimension. For example, in a standard vertical scroll, setting this to 50% would add 50% of the element height to the autodetected top position of the element.
-- **`data-scroll-duration`**: Defines the length over which the scroll animation plays, in pixels. This value can also be expressed as a percentage of the corresponding viewport dimension.
+- **`data-scroll-offset`**: Adjusts the start point of the scroll animation, specified in pixels or as a percentage of the element's dimension. If not set, the default is the top of the element's bounding box. A percentage value calculates the offset as a proportion of the element's dimension, added to any cumulative offset, while a pixel value sets the start point directly.
+  
+  | Attribute Usage          | Example        | Description                                          |
+  |--------------------------|----------------|------------------------------------------------------|
+  | Percentage of element    | `data-scroll-offset` to '50%' | Adds half of the element's height to the start point. |
+  | Absolute pixels          | `data-scroll-offset` to '100' | Starts the animation 100 pixels down from the top.   |
+
+
+- **`data-scroll-duration`**: Defines the duration over which the scroll animation runs, specified in pixels, 'vw' for viewport width, 'vh' for viewport height, or as a percentage of the element’s dimension. If not set, the default spans the size of the element's bounding box.
+  
+  | Attribute Usage          | Example                 | Description                                             |
+  |--------------------------|-------------------------|---------------------------------------------------------|
+  | Viewport height          | `data-scroll-duration` to '100vh' | Duration equals the full height of the viewport.        |
+  | Percentage of element    | `data-scroll-duration` to '50%'   | Animation lasts for half of the element’s dimension.    |
+  | Absolute pixels          | `data-scroll-duration` to '500'   | Specifies the animation duration as 500 pixels.         |
+
+
+
 - **`data-scroll-trigger`**: Specifies the viewport position at which the animation should start, as a fraction of the viewport height.
 - **`data-scroll-reset`**: If set to `false`, prevents the animation from resetting to its start state when scrolled back above the trigger point.
 - **`data-scroll-horizontal`**: Changes the scroll direction that triggers the animation from vertical to horizontal.
