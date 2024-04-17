@@ -72,8 +72,9 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 This example utilizes the CSS properties defined through `data-scroll-properties`. If a variable name is not defined to set the top margin using the local default variables `scroll`, the behavior will default to the local default variables.
 
 ```css
-.dynamic-margin-top {
+.dynamic-fade-out-top {
   margin-top: calc(var(--scroll-progress) * -200px);
+  opacity: calc(1 - var(--scroll-progress)) !important;
 }
 ```
 
