@@ -65,7 +65,7 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 
 ### CSS Properties Attribute
 
-- **`data-scroll-properties`**: This attribute dynamically links CSS variables to scroll activity, enabling styled effects based on scroll position. It specifies the names of the CSS variables that should be updated within the scope of the Hype document according to scroll progress, duration, and offset. If a specific value is provided for `data-scroll-properties`, such as `example`, the corresponding CSS variables within the element's scope are named `--example-progress`, `--example-duration`, `--example-trigger-hook` and `--example-offset`. If no value is specified, the default variables `--scroll-progress`, `--scroll-duration`, `--scroll-trigger-hook` and `--scroll-offset` are used. This functionality allows for sophisticated integration of CSS-driven animations and effects based on user interaction with scrollable content.
+- **`data-scroll-properties`**: This attribute dynamically links CSS variables to scroll activity, enabling styled effects based on scroll position. It specifies the names of the CSS variables that should be updated within the scope of the Hype document according to scroll progress, duration, and offset. If a specific value is provided for `data-scroll-properties`, such as `test`, the corresponding CSS variables within the element's scope are named `--test-progress`, `--test-duration`, `--test-trigger-hook` and `--test-offset`. If no value is specified, the default variables `--scroll-progress`, `--scroll-duration`, `--scroll-trigger-hook` and `--scroll-offset` are used. This functionality allows for sophisticated integration of CSS-driven animations and effects based on user interaction with scrollable content.
 
 #### For example:
 
@@ -78,15 +78,15 @@ This example utilizes the CSS properties defined through `data-scroll-properties
 }
 ```
 
-This second example uses `data-scroll-properties` set as `example` on the Hype document root to dynamically adjust the letter-spacing of an element based on the scroll progress. The letter-spacing will increase as you scroll further:
+This second example uses `data-scroll-properties` set as `letterbox` on the Hype document root to dynamically adjust the letter-spacing of an element based on the scroll progress. The letter-spacing will increase as you scroll further:
 
 ```css
 .dynamic-letter-spacing {
-  letter-spacing: calc(var(--example-progress) * 5px);
+  letter-spacing: calc(var(--letterbox-progress) * 5px);
 }
 ```
 
-In this example, the `letter-spacing` property of elements with the class `.dynamic-spacing` is adjusted based on the value of `--example-progress`, which is set via the `data-scroll-properties` attribute on the corresponding HTML element. As `--example-progress` increases (indicative of the user scrolling down the page), the letter-spacing of the text increases up to a maximum defined by the progress, multiplied by 5 pixels. This creates a dynamic effect where the spacing between characters expands as the user scrolls through the content.
+In this example, the `letter-spacing` property of elements with the class `.dynamic-letter-spacing` is adjusted based on the value of `--letterbox-progress`, which is set via the `data-scroll-properties` attribute on the corresponding HTML element. As `--letterbox-progress` increases (indicative of the user scrolling down the page), the letter-spacing of the text increases up to a maximum defined by the progress, multiplied by 5 pixels. This creates a dynamic effect where the spacing between characters expands as the user scrolls through the content.
 
 ### Indicator-Dependent Data Attributes (Requires Plugin Debug)
 
