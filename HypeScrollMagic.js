@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic v1.0.9
+ * Hype ScrollMagic v1.1.0
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
@@ -25,6 +25,9 @@
  * 1.0.9 Added support for percentage offset based on bounding box
  *       Added the Hype Action Event data-scroll-action as a catch-all (event.type-based settings)
  *       Fixed percentage support for duration and offset by precalculating
+ * 1.1.0 Added query to make sure data-scroll-properties add scroll listeners
+ *       Added query to make sure that Hype Action Event scroll actions add scroll listeners 
+ * 
  */
 
 if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -116,14 +119,14 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
         const sceneId = hypeDocument.currentSceneId();
         const controllerId = sceneId + axis;
         const hasActionEvents = "HypeActionEvents" in window !== false;
-        
+        console.log('controllerId', controllerId, controllers[controllerId])
         if (!controllers[controllerId]) {
             controllers[controllerId] = new ScrollMagic.Controller({
              vertical: options.horizontal? false : true,
             });
+        } else {
+            return;
         }
-
-        //timelineName = timelineName || _default.timelineName;
 
         options = Object.assign({}, _default.options, options);
 
@@ -202,15 +205,12 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
         });
 
         if (element.hasAttribute('data-scroll-properties')) {
-            const varName = element.getAttribute('data-scroll-properties');
-            if (varName) {
-                const hypeDocumentElem = document.getElementById(hypeDocument.documentId());
-                hypeDocumentElem.style.setProperty('--'+varName+'-duration', duration);
-                hypeDocumentElem.style.setProperty('--'+varName+'-offset', offset);
-            } else {
-                element.style.setProperty('--scroll-duration', duration);
-                element.style.setProperty('--scroll-offset', offset);
-            }
+            const varName = element.getAttribute('data-scroll-properties') || 'scroll';
+            const rootElm = varName === 'scroll' ? element : document.getElementById(hypeDocument.documentId());
+            rootElm.style.setProperty('--'+varName+'-duration', duration);
+            rootElm.style.setProperty('--'+varName+'-offset', offset);
+            rootElm.style.setProperty('--'+varName+'-trigger-hook', triggerHook);
+            rootElm.style.setProperty('--'+varName+'-progress', 0);
         }
 
         if (options.pin) {
@@ -235,13 +235,9 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
             }
 
             if (element.hasAttribute('data-scroll-properties')) {
-                const varName = element.getAttribute('data-scroll-properties');
-                if (varName) {
-                    const hypeDocumentElem = document.getElementById(hypeDocument.documentId());
-                    hypeDocumentElem.style.setProperty('--'+varName+'-progress', event.progress);
-                } else {
-                    element.style.setProperty('--scroll-progress', event.progress);
-                }
+                const varName = element.getAttribute('data-scroll-properties') || 'scroll';
+                const rootElm = varName === 'scroll' ? element : document.getElementById(hypeDocument.documentId());
+                rootElm.style.setProperty('--'+varName+'-progress', event.progress);
             }
 
             if (timelineName) {
@@ -303,9 +299,10 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
     }
 
     function HypeSceneLoad(hypeDocument, sceneElement) {
-        const scrollElements = sceneElement.querySelectorAll('[data-scroll-timeline],[data-scroll-pin]');
+        const hasActionEvents = "HypeActionEvents" in window !== false;
+        const actionEvents = hasActionEvents ? ',[data-scroll-action],[data-scroll-progress-action],[data-scroll-enter-action],[data-scroll-leave-action]' : '';
+        const scrollElements = sceneElement.querySelectorAll('[data-scroll-timeline],[data-scroll-pin],[data-scroll-properties]'+actionEvents);
         scrollElements.forEach(function (element) {
-            // const timelineNames = element.getAttribute('data-scroll-timeline') ? element.getAttribute('data-scroll-timeline').split(',').map(name => name.trim()) : ['Main Timeline'];
             const timelineNames = element.hasAttribute('data-scroll-timeline') ? 
                 (element.getAttribute('data-scroll-timeline') ? 
                     element.getAttribute('data-scroll-timeline').split(',').map(name => name.trim()) : 
@@ -353,7 +350,7 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
     window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
     return {
-        version: '1.0.9',
+        version: '1.1.0',
         setDefault: setDefault,
         getDefault: getDefault,
     };
