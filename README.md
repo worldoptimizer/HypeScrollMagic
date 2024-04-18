@@ -139,7 +139,28 @@ In cases where a Hype function is invoked, such as `myOffset()`, Hype automatica
 
 ## Behaviors
 
-`HypeScrollMagic` introduces a suite of behaviors that can be leveraged to create dynamic and engaging web content. These behaviors are triggered based on the user's scroll actions, providing a seamless integration between the user's interaction and the animation response. By defining specific behaviors for scroll events, such as `enter`, and `leave`, you can craft intricate animation sequences that are perfectly synchronized with the scroll position. This level of control allows for the creation of narrative-driven or interactive content that responds intuitively to user input.
+### Enter and Leave Events
+
+In HypeScrollMagic, "Enter" and "Leave" events are designed to trigger specific behaviors when scrolling through particular regions on a webpage. The behavior naming convention is based on the timeline name or the scroll name if provided. Triggering is dependent on a name being present in either the timeline or the manually set scroll name.
+
+**Behavior Mechanisms:**
+
+- **Enter**: Activated as the scroll enters a defined region, which can trigger linked animations or actions.
+- **Leave**: Triggered when the scroll exits the region, typically used to conclude or reverse animations.
+
+**Examples:**
+
+- General Behavior with Timline Name (e.g., "Main Timeline"):
+  - `Main Timeline Enter`
+  - `Main Timeline Leave`
+  
+- Specific Behavior with Scroll Name (e.g., "MyScrollArea"):
+  - `MyScrollArea Enter Forward`
+  - `MyScrollArea Enter Reverse`
+  - `MyScrollArea Leave Forward`
+  - `MyScrollArea Leave Reverse`
+
+The specific naming convention includes the direction of the scroll (`Forward` or `Reverse`) to further refine the behavior based on the scroll movement, providing detailed control over how animations and actions are synchronized with user interactions.
 
 ### Custom Behaviors and Event Listening
 
