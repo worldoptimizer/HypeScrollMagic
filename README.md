@@ -137,9 +137,9 @@ When actions are triggered using Hype Action Events, specific scroll-related pro
 
 In cases where a Hype function is invoked, such as `myOffset()`, Hype automatically populates the function's signature with `hypeDocument`, `element`, and `event`. The scope values (e.g., `duration`, `offset`) are also added to the event object, accessible as `event.duration`, `event.offset`, etc. This integration ensures that all relevant data is readily available within the function for precise control and customization of the scroll behavior.
 
-## Behaviors
+### Behaviors
 
-### Enter and Leave Events
+#### Enter and Leave Events
 
 In HypeScrollMagic, "Enter" and "Leave" events are designed to trigger specific behaviors when scrolling through particular regions on a webpage. The behavior naming convention is based on the timeline name or the scroll name if provided. Triggering is dependent on a name being present in either the timeline or the manually set scroll name.
 
