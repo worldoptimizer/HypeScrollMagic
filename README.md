@@ -156,8 +156,9 @@ when scrolling out of the timeline boundary upwards. Listening to these custom b
 ### Programmatically Adding Timelines
 - **Add a Scroll Timeline**: `hypeDocument.addScrollTimeline(element, timelineName, options)` - Programmatically adds a scroll timeline to the specified element with custom options.
 
+Customize each scroll timeline with options such as `pin`, `offset`, `duration`, `triggerHook`, `properties`, `horizontal` and `reset`, allowing for fine-tuned control over the animation behavior. Also, you can set up `indicatorColor`, `addIndicators`, and the various Hype Event Actions using the programmatic approach if needed.
+
 ### Options
-Customize each scroll timeline with options such as `pin`, `offset`, `duration`, `triggerHook`, and `reset`, allowing for fine-tuned control over the animation behavior.
 
 ### Advanced Usage Example
 
