@@ -78,6 +78,7 @@ The extension looks for elements with the `data-scroll-timeline` attribute withi
 - **`data-scroll-trigger`**: Specifies the viewport position at which the animation should start, as a fraction of the viewport height.
 - **`data-scroll-reset`**: If set to `false`, prevents the animation from resetting to its start state when scrolled back above the trigger point.
 - **`data-scroll-horizontal`**: Changes the scroll direction that triggers the animation from vertical to horizontal.
+- **`data-scroll-name`**: When a scroll is named, it alters the custom behavior naming convention and label when utilizing the debugging plugin. Scrolls that are unnamed (for instance, when only a pin is used) do not trigger custom behavior if no name is specified, as the timelinename cannot be used due to its absence.
 
 ### CSS Properties Attribute
 
