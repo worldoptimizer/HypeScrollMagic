@@ -132,6 +132,13 @@ In this example, the `letter-spacing` property of elements with the class `.dyna
 
 - **`data-scroll-action`**: Serves as a catch-all. It is particularly useful if you wish to link all actions to a single handler function and differentiate return values based on `event.type`.
 
+
+#### Dynamic CSS Class Management
+
+- **`data-scroll-element-class`**: This attribute is assigned to a Hype Scroll Magic element. The value is a CSS class name that is applied to the element when it enters the scroll timeline. This class is automatically removed when the element exits the scroll timeline. This functionality is ideal for triggering visual changes and animations that engage users as they scroll and enables elements to dynamically change their appearance as they enter and leave the scroll timeline.
+
+- **`data-scroll-scene-class`**: This attribute is used to apply a CSS class to the entire Hype Scene when it becomes visible within the scroll timeline. The class is removed when the scene exits the scroll timeline. Applying this attribute to a scene enhances the overall thematic or stylistic changes across the scene, marking its entry and exit within the scroll timeline and allows for broader visual transitions, setting or changing the mood as entire Hype scene or element withing it.
+
 ### Scope and Event Object in Action Calls
 
 When actions are triggered using Hype Action Events, specific scroll-related properties such as `offset`, `duration`, and `triggerHook` are exposed within the scope of the action. This allows for direct manipulation and calculation within the action scripts. For instance, expressions like `offset + duration / 2` can be used directly in `data-scroll-offset-action` or `data-scroll-duration-action` to compute values dynamically based on the current scrolling context.
