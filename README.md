@@ -95,11 +95,19 @@ This example utilizes the CSS properties defined through `data-scroll-properties
 }
 ```
 
-This second example uses `data-scroll-properties` set as `letterbox` on the Hype document root to dynamically adjust the letter-spacing of an element based on the scroll progress. The letter-spacing will increase as you scroll further:
+or 
 
 ```css
 .dynamic-letter-spacing {
-  letter-spacing: calc(var(--letterbox-progress) * 5px);
+  letter-spacing: calc(var(--scroll-progress) * 5px) !important;
+}
+```
+
+We will reuse the second example and define `data-scroll-properties` set as `letterbox` on the Hype document root to dynamically adjust the letter-spacing of an element based on the scroll progress. The letter-spacing will increase as you scroll further, and the values will be defined on the Hype scene rather than on the element.
+
+```css
+.dynamic-letter-spacing {
+  letter-spacing: calc(var(--letterbox-progress) * 5px) !important;
 }
 ```
 
