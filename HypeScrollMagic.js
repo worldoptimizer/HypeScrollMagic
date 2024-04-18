@@ -28,7 +28,9 @@
  * 1.1.0 Added query to make sure data-scroll-properties add scroll listeners
  *       Added query to make sure that Hype Action Event scroll actions add scroll listeners 
  *       Added more robust controller and scene management and garbage collection
+ *       Added support for scene and element classes additions during scroll events
  *       Removed all dataset references from addScrollTimeline to avoid side effects
+ *       Added scroll name to options to allow for more 
  */
 
 if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -119,6 +121,7 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
         
         const sceneId = hypeDocument.currentSceneId();
         const hasActionEvents = "HypeActionEvents" in window !== false;
+        const scrollName = options.scrollName || timelineName;
         
         const controller = new ScrollMagic.Controller({
             vertical: options.horizontal? false : true,
@@ -205,6 +208,24 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
             triggerHook: triggerHook,
         });
 
+          
+        if (options.elementClass) {
+            scene.on("enter", function (event) {
+                element.classList.add(options.elementClass);
+            });
+            scene.on("leave", function (event) {
+                element.classList.remove(options.elementClass);
+            });
+        }
+        if (options.sceneClass) {
+            scene.on("enter", function (event) {
+                sceneElement.classList.add(options.sceneClass);
+            }); 
+            scene.on("leave", function (event) {
+                sceneElement.classList.remove(options.sceneClass);
+            });
+        }
+
         if (options.hasOwnProperty('properties')){
             const varName = typeof options.properties === 'string' ? options.properties || 'scroll' : 'scroll';
             const rootElm = varName === 'scroll' ? element : document.getElementById(hypeDocument.documentId());
@@ -226,15 +247,6 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
         });
         
         scene.on("progress", function (event) {
-            if (hasActionEvents) {
-                const scrollCode = options.scrollCode;
-                const code = options.progressCode || scrollCode;
-                if (code) hypeDocument.triggerAction(code, Object.assign({
-                    element: element,
-                    event: event,
-                }));
-            }
-
             if (options.hasOwnProperty('properties')){
                 const varName = typeof options.properties === 'string' ? options.properties || 'scroll' : 'scroll';
                 const rootElm = varName === 'scroll' ? element : document.getElementById(hypeDocument.documentId());
@@ -247,15 +259,33 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
                     api.goToTimeInTimelineNamed(event.progress * duration, timelineName);
                 }
             }
+
+            if (hasActionEvents) {
+                const scrollCode = options.scrollCode;
+                const code = options.progressCode || scrollCode;
+                if (code) hypeDocument.triggerAction(code, Object.assign({
+                    element: element,
+                    event: event,
+                }));
+            }
         })
         
-        function triggerBehaviorAndAction(eventType, event) {
+        function triggerBehavior(eventType, event) {
             const eventScrollDirection = event.scrollDirection.charAt(0).toUpperCase() + event.scrollDirection.slice(1).toLowerCase();
-            const behavior = timelineName + ' ' + eventType + ' ' + eventScrollDirection
-            hypeDocument.triggerCustomBehaviorNamed(behavior);
-            
-            if (_default.logBehavior) console.log(behavior);
-            
+            const eventName = scrollName? scrollName + ' ' : '';
+            const behaviorSpecific = eventName + eventType + ' ' + eventScrollDirection
+            const behaviorGeneral = eventName + eventType;
+        
+            hypeDocument.triggerCustomBehaviorNamed(behaviorSpecific);
+            hypeDocument.triggerCustomBehaviorNamed(behaviorGeneral);
+
+            if (_default.logBehavior) {
+                console.log(behaviorGeneral);
+                console.log(behaviorSpecific);
+            }
+        }
+
+        function triggerAction(eventType, event) {
             if (hasActionEvents) {
                 const scrollCode = options.scrollCode;
                 const code = options[eventType.toLowerCase() + 'Code']  || scrollCode;
@@ -265,24 +295,28 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
                 });
             }
         }
-
-        if (_default.behavior.enter) {
-            scene.on("enter", function(event) {
-                triggerBehaviorAndAction('Enter', event);
-            });
-        }
-
-        if (_default.behavior.leave) {
-            scene.on("leave", function(event) {
-                triggerBehaviorAndAction('Leave', event);
-            });
-        }
         
+        const shouldTriggerEnter = (scrollName && _default.behavior.enter);
+        if (shouldTriggerEnter || options.enterCode) {
+            scene.on("enter", function(event) {
+                if (shouldTriggerEnter) triggerBehavior('Enter', event);
+                if (options.enterCode) triggerAction('Enter', event);
+            });
+        }
+
+        const shouldTriggerLeave = (scrollName && _default.behavior.leave);
+        if (shouldTriggerLeave || options.leaveCode) {
+            scene.on("leave", function(event) {
+                if (shouldTriggerLeave) triggerBehavior('Leave', event);
+                if (options.leaveCode) triggerAction('Leave', event);
+            });
+        }
+
 	    scene.addTo(controller);
 
         if (scene.addIndicators && (_default.addIndicators || options.addIndicators)) {
             scene.addIndicators({
-                name: timelineName || 'only pin',
+                name: scrollName,
                 colorStart: options.indicatorColor,
                 colorEnd: options.indicatorColor,
                 colorTrigger: options.indicatorColor,
@@ -303,7 +337,7 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
     function HypeSceneLoad(hypeDocument, sceneElement) {
         const hasActionEvents = "HypeActionEvents" in window !== false;
         const actionEvents = hasActionEvents ? ',[data-scroll-action],[data-scroll-progress-action],[data-scroll-enter-action],[data-scroll-leave-action]' : '';
-        const scrollElements = sceneElement.querySelectorAll('[data-scroll-timeline],[data-scroll-pin],[data-scroll-properties]'+actionEvents);
+        const scrollElements = sceneElement.querySelectorAll('[data-scroll-timeline],[data-scroll-pin],[data-scroll-properties],[data-scroll-element-class],[data-scroll-scene-class]'+actionEvents);
         scrollElements.forEach(function (element) {
             const timelineNames = element.hasAttribute('data-scroll-timeline') ? 
                 (element.getAttribute('data-scroll-timeline') ? 
@@ -320,6 +354,8 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
                 horizontal: element.hasAttribute('data-scroll-horizontal'),
             };
 
+            if (element.hasAttribute('data-scroll-name')) options.scrollName = element.getAttribute('data-scroll-name');
+
             if (hasActionEvents) {
                 if (element.hasAttribute('data-scroll-action')) options.scrollCode = element.getAttribute('data-scroll-action');
                 if (element.hasAttribute('data-scroll-offset-action')) options.offsetCode = element.getAttribute('data-scroll-offset-action');
@@ -329,6 +365,9 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
                 if (element.hasAttribute('data-scroll-enter-action')) options.enterCode = element.getAttribute('data-scroll-enter-action');
                 if (element.hasAttribute('data-scroll-leave-action')) options.leaveCode = element.getAttribute('data-scroll-leave-action');
             }
+
+            if (element.hasAttribute('data-scroll-element-class')) options.elementClass = element.getAttribute('data-scroll-element-class');
+            if (element.hasAttribute('data-scroll-scene-class')) options.sceneClass = element.getAttribute('data-scroll-scene-class');
 
             if (element.hasAttribute('data-scroll-properties')) {
                 const properties = element.getAttribute('data-scroll-properties');
