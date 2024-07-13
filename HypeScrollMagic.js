@@ -1,5 +1,5 @@
 /*!
- * Hype ScrollMagic v1.1.0
+ * Hype ScrollMagic v1.1.1
  * Integrates ScrollMagic with Tumult Hype for scroll-based animations and interactions.
  * Copyright (2024) Max Ziebell, (https://maxziebell.de). MIT-license
  */
@@ -30,7 +30,8 @@
  *       Added more robust controller and scene management and garbage collection
  *       Added support for scene and element classes additions during scroll events
  *       Removed all dataset references from addScrollTimeline to avoid side effects
- *       Added scroll name to options to allow for more 
+ *       Added scroll name to options to allow for more
+ * 1.1.1 Fixed garbage collection error when no scroll scenes or controllers are present
  */
 
 if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function () {
@@ -388,11 +389,13 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
     function HypeSceneUnload(hypeDocument, element) {        
         const sceneId = element.id;
 
+         if (!scenes[sceneId]) return;
         scenes[sceneId].forEach(scene => {
             if (scene) scene.destroy(true);
         });
         scenes[sceneId] = [];
         
+        if (!controllers[sceneId]) return;
         controllers[sceneId].forEach(controller => {
             if (controller) controller.destroy(true);
         });
@@ -407,7 +410,7 @@ if ("HypeScrollMagic" in window === false) window['HypeScrollMagic'] = (function
     window.HYPE_eventListeners.push({"type": "HypeSceneUnload", "callback": HypeSceneUnload});
 
     return {
-        version: '1.1.0',
+        version: '1.1.1',
         setDefault: setDefault,
         getDefault: getDefault,
     };
